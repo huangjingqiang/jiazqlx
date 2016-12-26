@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">WXLoction</string>
+
+    <string name="select_image">选择你的图片</string>
+
+    <string name="start_location">开始</string>
+    <string name="clear_status">清空</string>
+    <string name="stop_location">停止</string>
+    <string name="settings">设置</string>
+    <string name="my_location">我的位置</string>
+    <string name="placeholder"></string>
+    <string name="btn_my_loc">定位</string>
+    <string name="btn_add">添加</string>
+    <string name="btn_del">删除</string>
+    <string name="btn_stop">停止测试</string>
+    <string name="set_name">取个名字吧</string>
+
+    <string name="key_search">输入位置关键字搜索</string>
+    <string name="tab_hot">热门标签</string>
+    <string name="tab_loction">位置标签</string>
+    <string name="tab_map">地图标签</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="clear_search">清空搜索历史</string>
+    <string name="search_history">搜索历史</string>
+    <string name="free_use">体验次数用完啦</string>
+    <string name="free_introduction">下载安装我们开发的另一个好玩的应用
+    可继续使用。就是这么耍流流氓~</string>
+    <string name="ok_go">好的去看看</string>
+    <string name="location_modify">位置修改为</string>
+    <string name="modify_save">修改并保存到相册</string>
+    <string name="select_use">选择一张图片</string>
+    <string name="modify_success">修改成功!</string>
+    <string name="save_pic">已保存到相册</string>
+    <string name="modify_one">再修改一张</string>
+
+</resources>
