@@ -117,7 +117,7 @@ public class SelectActivity extends AppCompatActivity {
                         Toast.makeText(this, "图片不存在", Toast.LENGTH_LONG).show();
                     } else {
                         Intent intent = new Intent(SelectActivity.this,MainActivity.class);
-                        SharedPreferencesUtil.getString(SelectActivity.this,"url","");
+                        SharedPreferencesUtil.putString(SelectActivity.this,"url",url);
                         startActivity(intent);
                     }
 

@@ -15,6 +15,7 @@ public class WriteImageGps {
     public static boolean writeImageGps(String longitude,String latitude,String url){
         double lo = Double.valueOf(longitude);
         double la = Double.valueOf(latitude);
+        Log.e("------1>",la+"---"+lo);
         try {
             ExifInterface exifInterface = new ExifInterface(url);
             //经度
@@ -27,6 +28,11 @@ public class WriteImageGps {
             exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, la > 0.0f ? "N" : "S");
 
             exifInterface.saveAttributes();
+            ExifInterface newExifInterface = null;
+            newExifInterface = new ExifInterface(url);
+            String la2 = newExifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+            String lo2 = newExifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+            Log.e("--------->",la2+"---"+lo2+"---"+url);
             return true;
         } catch (IOException e) {
             e.printStackTrace();

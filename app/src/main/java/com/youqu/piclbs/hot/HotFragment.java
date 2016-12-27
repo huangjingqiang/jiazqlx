@@ -9,10 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.youqu.piclbs.R;
 import com.youqu.piclbs.bean.AddressBean;
@@ -41,15 +43,21 @@ public class HotFragment extends Fragment {
     FrameLayout transitionsContainer;
     @BindView(R.id.image_save)
     TextView save;
+    @BindView(R.id.layout_iv)
+    ImageView bg_iv;
     private String lo;
     private String la;
     private AddressBean items;
+    String url;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_hot, container, false);
         ButterKnife.bind(this, rootView);
+        url = SharedPreferencesUtil.getString(getActivity(),"url","");
+        Glide.with(getActivity()).load(url).into(bg_iv);
+
         initView();
         initClisk();
         return rootView;
@@ -93,7 +101,7 @@ public class HotFragment extends Fragment {
 
     @OnClick(R.id.image_save)
     public void onClick() {
-        String url = SharedPreferencesUtil.getString(getActivity(),"url","");
+        Glide.with(getActivity()).load(url).into(bg_iv);
         if (WriteImageGps.writeImageGps(lo,la,url)){
             SaveDialogFragment fragment = new SaveDialogFragment();
             fragment.show(getFragmentManager(),"SaveDialogFragment");

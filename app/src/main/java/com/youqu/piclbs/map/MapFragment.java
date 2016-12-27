@@ -7,13 +7,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.tencent.lbssearch.TencentSearch;
+import com.tencent.lbssearch.httpresponse.BaseObject;
+import com.tencent.lbssearch.httpresponse.HttpResponseListener;
+import com.tencent.lbssearch.object.param.Geo2AddressParam;
+import com.tencent.lbssearch.object.result.Geo2AddressResultObject;
 import com.tencent.map.geolocation.TencentGeofence;
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.mapsdk.raster.model.LatLng;
@@ -34,7 +42,12 @@ import com.youqu.piclbs.tencent.fence.DemoGeofenceApp;
 import com.youqu.piclbs.tencent.fence.DemoGeofenceService;
 import com.youqu.piclbs.tencent.fence.LocationHelper;
 import com.youqu.piclbs.tencent.fence.Utils;
+import com.youqu.piclbs.util.DensityUtil;
+import com.youqu.piclbs.util.SaveDialogFragment;
+import com.youqu.piclbs.util.SharedPreferencesUtil;
+import com.youqu.piclbs.util.WriteImageGps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,66 +62,51 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
 
     @BindView(R.id.empty)
     View empty;
-    @BindView(R.id.my_loc)
-    Button myLoc;
-    @BindView(R.id.add)
-    Button add;
-    @BindView(R.id.del)
-    Button del;
-    @BindView(R.id.stop)
-    Button stop;
-    @BindView(R.id.button_container)
-    LinearLayout buttonContainer;
     @BindView(R.id.map)
     MapView mMapView;
     @BindView(R.id.center)
     ImageView center;
-    @BindView(R.id.position)
-    TextView mPosition;
     @BindView(R.id.top_container)
     RelativeLayout topContainer;
     @BindView(R.id.geofence_list)
     ListView mFenceList;
+    @BindView(R.id.map_recycler)
+    RecyclerView recyclerView;
+    @BindView(R.id.layot_image)
+    LinearLayout iv;
+    @BindView(R.id.layout_iv)
+    ImageView bg_iv;
 
     private LocationHelper mLocationHelper;
     private TencentMap mTencentMap;
     private ArrayAdapter<TencentGeofence> mFenceListAdapter;
     private List<Marker> mFenceItems;
     private final Location mCenter = new Location("");
+    private MapAdapter adapter;
+    private double lng;
+    private double lat;
+    String url;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, rootView);
+        url = SharedPreferencesUtil.getString(getActivity(),"url","");
 
         mLocationHelper = new LocationHelper(getActivity());
+        Glide.with(getActivity()).load(url).into(bg_iv);
         initUi();
+        initRecyclerView();
+        doMyLoc();
         return rootView;
     }
 
-    @OnClick({R.id.my_loc,R.id.add,R.id.del,R.id.stop})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.my_loc: // 获取当前位置
-                doMyLoc();
-                break;
 
-            case R.id.add: // 添加新的围栏
-                doPreAdd();
-                break;
-            case R.id.del: // 删除选中的围栏
-                int selected = mFenceList.getCheckedItemPosition();
-                doDel(selected);
-                break;
-
-            case R.id.stop:
-                DemoGeofenceService.stopMe(getActivity()); // 停止测试
-                break;
-
-            default:
-                break;
-        }
+    private void initRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
     }
 
     @Override
@@ -144,12 +142,87 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
     }
 
     private void updatePosition() {
-        double lat = mTencentMap.getMapCenter().getLatitude();
-        double lng = mTencentMap.getMapCenter().getLongitude();
-
-        mPosition.setText(lat + "," + lng);
+        lat = mTencentMap.getMapCenter().getLatitude();
+        lng = mTencentMap.getMapCenter().getLongitude();
         mCenter.setLatitude(lat);
         mCenter.setLongitude(lng);
+        String str = (lat + ",") + (lng + "");
+        com.tencent.lbssearch.object.Location location = str2Coordinate(getActivity(), str);
+        if (location == null) {
+            return;
+        }
+        TencentSearch tencentSearch = new TencentSearch(getActivity());
+        Geo2AddressParam geo2AddressParam = new Geo2AddressParam().
+                location(location).get_poi(true);
+        tencentSearch.geo2address(geo2AddressParam, new HttpResponseListener() {
+
+            @Override
+            public void onSuccess(int arg0, BaseObject arg1) {
+                if (arg1 == null) {
+                    return;
+                }
+                Geo2AddressResultObject obj = (Geo2AddressResultObject) arg1;
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("\n地址：" + obj.result.address);
+                sb.append("\npois:");
+                List<Geo2AddressResultObject.ReverseAddressResult.Poi> items = new ArrayList<>();
+                for (Geo2AddressResultObject.ReverseAddressResult.Poi poi : obj.result.pois) {
+                    items.add(poi);
+                }
+                adapter = new MapAdapter(getActivity(), items);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                adapter.setMapItemClickLinstener(new MapAdapter.onMapItemClickLinstener() {
+                    @Override
+                    public void ItemClisk(int pos, boolean isex) {
+                        adapter.notifyDataSetChanged();
+                        if ((iv.getHeight() > DensityUtil.dp2px(getActivity(), 90)) && !isex) {
+                            ViewGroup.LayoutParams params = iv.getLayoutParams();
+                            params.height = DensityUtil.dp2px(getActivity(), 0);
+                            iv.setLayoutParams(params);
+                        } else {
+                            ViewGroup.LayoutParams params = iv.getLayoutParams();
+                            params.height = DensityUtil.dp2px(getActivity(), 260);
+                            iv.setLayoutParams(params);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(int arg0, String arg1, Throwable arg2) {
+                Log.e("------->", arg1);
+            }
+        });
+
+    }
+
+    /**
+     * 由字符串获取坐标
+     *
+     * @param context
+     * @param str
+     * @return
+     */
+    public static com.tencent.lbssearch.object.Location str2Coordinate(Context context, String str) {
+        if (!str.contains(",")) {
+            Toast.makeText(context, "经纬度用\",\"分割", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        String[] strs = str.split(",");
+        float lat = 0;
+        float lng = 0;
+        try {
+            lat = Float.parseFloat(strs[0]);
+            lng = Float.parseFloat(strs[1]);
+        } catch (NumberFormatException e) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return new com.tencent.lbssearch.object.Location(lat, lng);
     }
 
     private void animateTo(TencentLocation location) {
@@ -182,6 +255,11 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        params.height = DensityUtil.dp2px(getActivity(), 0);
+        iv.setLayoutParams(params);
+
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
             updatePosition();
         }
@@ -235,23 +313,6 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
                 DemoGeofenceService.ACTION_ADD_GEOFENCE, tag);
     }
 
-    private void doDel(int selected) {
-        if (selected == ListView.INVALID_POSITION || selected >= mFenceListAdapter.getCount()) {
-            toast(getActivity(), "没有选中");
-            return;
-        }
-
-        // 更新 adapter view
-        TencentGeofence item = mFenceListAdapter.getItem(selected);
-        mFenceListAdapter.remove(item);
-        // 更新 marker lists
-        mFenceItems.remove(selected).remove();
-
-        // 移除地理围栏
-        DemoGeofenceService.startMe(getActivity(),
-                DemoGeofenceService.ACTION_DEL_GEOFENCE, item.getTag());
-    }
-
     public class AddGeofenceOnClickListener implements DialogInterface.OnClickListener {
 
         private View mView;
@@ -275,6 +336,17 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
             } else {
                 toast(getActivity(), "围栏名字不能为空");
             }
+        }
+    }
+
+    @OnClick(R.id.image_save)
+    public void onClick() {
+
+        if (WriteImageGps.writeImageGps(lng+"",lat+"",url)){
+            SaveDialogFragment fragment = new SaveDialogFragment();
+            fragment.show(getFragmentManager(),"SaveDialogFragment");
+        }else {
+            Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
         }
     }
 

@@ -80,7 +80,7 @@ public class SaveDialogFragment extends DialogFragment {
                         Toast.makeText(getActivity(), "图片不存在", Toast.LENGTH_LONG).show();
                     } else {
                         Intent intent = new Intent(getActivity(),MainActivity.class);
-                        SharedPreferencesUtil.getString(getActivity(),"url","");
+                        SharedPreferencesUtil.putString(getActivity(),"url",url);
                         startActivity(intent);
                     }
 

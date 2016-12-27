@@ -8,10 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.youqu.piclbs.R;
 import com.youqu.piclbs.bean.AddressBean;
@@ -41,6 +43,9 @@ public class LocationFragment extends Fragment {
     LinearLayout iv;
     @BindView(R.id.image_save)
     TextView save;
+    @BindView(R.id.layout_iv)
+    ImageView bg_iv;
+
     private String lo;
     private String la;
     private AddressBean items;
@@ -48,12 +53,15 @@ public class LocationFragment extends Fragment {
 
     private CategoryAdapter categoryAdapter;
     private LocationAdapter locationAdapter;
+    String url;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_location, container, false);
-        ButterKnife.bind(this, rootView);
+       ButterKnife.bind(this, rootView);
+        url = SharedPreferencesUtil.getString(getActivity(),"url","");
+        Glide.with(getActivity()).load(url).into(bg_iv);
 
         initRecyclerView();
         initClick();
@@ -120,7 +128,6 @@ public class LocationFragment extends Fragment {
 
     @OnClick(R.id.image_save)
     public void onClick() {
-        String url = SharedPreferencesUtil.getString(getActivity(),"url","");
         if (WriteImageGps.writeImageGps(lo,la,url)){
             SaveDialogFragment fragment = new SaveDialogFragment();
             fragment.show(getFragmentManager(),"SaveDialogFragment");
