@@ -58,6 +58,9 @@
         <activity android:name=".MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
+        <activity android:name=".AboutActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
         <receiver android:name=".tencent.fence.DemoGeofenceEventReceiver"
             android:exported="false">
             <intent-filter>
@@ -69,6 +72,14 @@
         <meta-data
             android:name="TencentMapSDK"
             android:value="OSNBZ-6TORU-PPAVX-4SSUG-WHRK2-N6FA4" />
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="586636b1f43e483ab4000219" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="sys" >
+        </meta-data>
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.youqu.piclbs.location;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LoactionViewHolder> {
     public Activity activity;
-    public List<AddressBean.CategoryBean.LocationBean> items;
+    private List<AddressBean.CategoryBean.LocationBean> items;
     private List<Boolean> isClick;
     private onLocationItemClickListener locationItemClickListener;
 
@@ -31,13 +32,21 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Loacti
         this.activity = activity;
         this.items = items;
         isClick = new ArrayList<>();
+        if (items == null)return;
         for (int i=0;i<items.size();i++){
             isClick.add(false);
         }
     }
     public void addItems(List<AddressBean.CategoryBean.LocationBean> items2){
         items = items2;
+        isClick = new ArrayList<>();
+        for (int i=0;i<items.size();i++){
+            isClick.add(false);
+        }
         notifyDataSetChanged();
+    }
+    public void removeAll(){
+        items.clear();
     }
 
     @Override

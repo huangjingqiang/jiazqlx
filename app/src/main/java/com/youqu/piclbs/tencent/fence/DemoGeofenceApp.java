@@ -4,8 +4,12 @@ import android.app.Application;
 
 import com.tencent.map.geolocation.TencentGeofence;
 import com.tencent.mapsdk.raster.model.Marker;
+import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 /**
  * 继承 Application, 用于在全局范围内保存 TencentGeofence.
@@ -43,6 +47,13 @@ public class DemoGeofenceApp extends Application {
 //			}
 //
 //		});
+
+		OkHttpClient okHttpClient = new OkHttpClient.Builder()
+				.connectTimeout(10000L, TimeUnit.MILLISECONDS)
+				.readTimeout(10000L, TimeUnit.MILLISECONDS)
+				//其他配置
+				.build();
+		OkHttpUtils.initClient(okHttpClient);
 	}
 
 	public static ArrayList<Marker> getFenceItems() {

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.youqu.piclbs.hot.HotFragment;
@@ -21,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_viewpager)
     ViewPager viewPager;
     private final int REQUEST_IMAGE = 0x111;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity{
     SlidingTabLayout slidingTabLayout;
     @BindView(R.id.main_search)
     RelativeLayout search;
+    @BindView(R.id.main_about)
+    ImageView about;
     private List<String> titles = new ArrayList<>();
     private List<Fragment> fragments = new ArrayList<>();
     private MainFragmentAdapter adapter;
@@ -68,9 +72,17 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    @OnClick(R.id.main_search)
-    public void onClick() {
-        Intent intent = new Intent(MainActivity.this,SearchResultActivity.class);
-        startActivity(intent);
+    @OnClick({R.id.main_search,R.id.main_about})
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.main_about:
+                Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.main_search:
+                Intent intent = new Intent(MainActivity.this, SearchResultActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 }

@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'hongbao'
+            keyPassword '1234567i'
+            storeFile file('./home/sum/CompanyProjects/hujiang.keystore')
+            storePassword '1234567i'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
     defaultConfig {
@@ -35,4 +43,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     compile "com.andkulikov:transitionseverywhere:1.7.0"
     compile 'me.relex:circleindicator:1.1.8@aar'
+    compile 'com.zhy:okhttputils:2.6.2'
 }

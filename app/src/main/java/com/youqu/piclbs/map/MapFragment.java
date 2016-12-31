@@ -38,11 +38,13 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 import com.youqu.piclbs.R;
+import com.youqu.piclbs.pay.PayDialoFragment;
 import com.youqu.piclbs.tencent.fence.DemoGeofenceApp;
 import com.youqu.piclbs.tencent.fence.DemoGeofenceService;
 import com.youqu.piclbs.tencent.fence.LocationHelper;
 import com.youqu.piclbs.tencent.fence.Utils;
 import com.youqu.piclbs.util.DensityUtil;
+import com.youqu.piclbs.util.PackageManagerUtil;
 import com.youqu.piclbs.util.SaveDialogFragment;
 import com.youqu.piclbs.util.SharedPreferencesUtil;
 import com.youqu.piclbs.util.WriteImageGps;
@@ -167,6 +169,10 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
                 sb.append("\n地址：" + obj.result.address);
                 sb.append("\npois:");
                 List<Geo2AddressResultObject.ReverseAddressResult.Poi> items = new ArrayList<>();
+                if (obj.result.pois == null){
+                    Toast.makeText(getActivity(),"地图只提供国内搜索，请移步到搜索界面定位国外地址",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 for (Geo2AddressResultObject.ReverseAddressResult.Poi poi : obj.result.pois) {
                     items.add(poi);
                 }
@@ -335,18 +341,55 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
                 doAdd(name);
             } else {
                 toast(getActivity(), "围栏名字不能为空");
-            }
+           }
         }
     }
 
-    @OnClick(R.id.image_save)
-    public void onClick() {
+    @OnClick({R.id.image_save,R.id.layot_image})
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.layot_image:
+                if ((iv.getHeight() > DensityUtil.dp2px(getActivity(), 90))) {
+                    ViewGroup.LayoutParams params = iv.getLayoutParams();
+                    params.height = DensityUtil.dp2px(getActivity(), 0);
+                    iv.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = iv.getLayoutParams();
+                    params.height = DensityUtil.dp2px(getActivity(), 260);
+                    iv.setLayoutParams(params);
+                }
+                break;
+            case R.id.image_save:
+                String download_url = SharedPreferencesUtil.getString(getActivity(),"download_url","");
+                boolean is = PackageManagerUtil.isAvilible(getActivity(),download_url.split("=")[download_url.split("=").length-1]);
+                if (is){
+                    if (WriteImageGps.writeImageGps(lng+"",lat+"",url)){
+                        SaveDialogFragment fragment = new SaveDialogFragment();
+                        fragment.show(getFragmentManager(),"SaveDialogFragment");
+                    }else {
+                        Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
+                    }
+                }else {
+                    int num = SharedPreferencesUtil.getInt(getActivity(),"num",0);
+                    if (num > 3){
+                        PayDialoFragment payDialoFragment = new PayDialoFragment();
+                        payDialoFragment.show(getFragmentManager(),"PayDialoFragment");
+                    }else {
+                        if (num == 0){
+                            SharedPreferencesUtil.putInt(getActivity(),"num",1);
+                        }else {
+                            SharedPreferencesUtil.putInt(getActivity(),"num",num+1);
+                        }
+                        if (WriteImageGps.writeImageGps(lng+"",lat+"",url)){
+                            SaveDialogFragment fragment = new SaveDialogFragment();
+                            fragment.show(getFragmentManager(),"SaveDialogFragment");
+                        }else {
+                            Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+                break;
 
-        if (WriteImageGps.writeImageGps(lng+"",lat+"",url)){
-            SaveDialogFragment fragment = new SaveDialogFragment();
-            fragment.show(getFragmentManager(),"SaveDialogFragment");
-        }else {
-            Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
         }
     }
 

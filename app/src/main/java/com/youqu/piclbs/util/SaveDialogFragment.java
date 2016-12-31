@@ -58,13 +58,17 @@ public class SaveDialogFragment extends DialogFragment {
                 dismiss();
                 break;
             case R.id.btn_save_bt:
-                dismiss();
-                MultiImageSelector.create()
-                        .showCamera(false)
-                        .single()
-                        .start(getActivity(), REQUEST_IMAGE);
+                save();
                 break;
         }
+    }
+
+    private void save() {
+        dismiss();
+        MultiImageSelector.create()
+                .showCamera(false)
+                .single()
+                .start(getActivity(), REQUEST_IMAGE);
     }
 
     @Override

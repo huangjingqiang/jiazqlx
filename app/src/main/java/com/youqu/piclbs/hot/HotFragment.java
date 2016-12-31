@@ -18,7 +18,9 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.youqu.piclbs.R;
 import com.youqu.piclbs.bean.AddressBean;
+import com.youqu.piclbs.pay.PayDialoFragment;
 import com.youqu.piclbs.util.DensityUtil;
+import com.youqu.piclbs.util.PackageManagerUtil;
 import com.youqu.piclbs.util.SaveDialogFragment;
 import com.youqu.piclbs.util.SharedPreferencesUtil;
 import com.youqu.piclbs.util.StreamReaderUtil;
@@ -99,14 +101,52 @@ public class HotFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    @OnClick(R.id.image_save)
-    public void onClick() {
-        Glide.with(getActivity()).load(url).into(bg_iv);
-        if (WriteImageGps.writeImageGps(lo,la,url)){
-            SaveDialogFragment fragment = new SaveDialogFragment();
-            fragment.show(getFragmentManager(),"SaveDialogFragment");
-        }else {
-            Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
+    @OnClick({R.id.image_save,R.id.layot_image})
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.layot_image:
+                if ((iv.getHeight() > DensityUtil.dp2px(getActivity(), 90))) {
+                    ViewGroup.LayoutParams params = iv.getLayoutParams();
+                    params.height = DensityUtil.dp2px(getActivity(), 90);
+                    iv.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = iv.getLayoutParams();
+                    params.height = DensityUtil.dp2px(getActivity(), 260);
+                    iv.setLayoutParams(params);
+                }
+                break;
+            case R.id.image_save:
+                String download_url = SharedPreferencesUtil.getString(getActivity(),"download_url","");
+                boolean is = PackageManagerUtil.isAvilible(getActivity(),download_url.split("=")[download_url.split("=").length-1]);
+                if (is){
+                    if (WriteImageGps.writeImageGps(lo+"",la+"",url)){
+                        SaveDialogFragment fragment = new SaveDialogFragment();
+                        fragment.show(getFragmentManager(),"SaveDialogFragment");
+                    }else {
+                        Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
+                    }
+                }else {
+                    int num = SharedPreferencesUtil.getInt(getActivity(),"num",0);
+                    if (num > 3){
+                        PayDialoFragment payDialoFragment = new PayDialoFragment();
+                        payDialoFragment.show(getFragmentManager(),"PayDialoFragment");
+                    }else {
+                        if (num == 0){
+                            SharedPreferencesUtil.putInt(getActivity(),"num",1);
+                        }else {
+                            SharedPreferencesUtil.putInt(getActivity(),"num",num+1);
+                        }
+                        if (WriteImageGps.writeImageGps(lo+"",la+"",url)){
+                            SaveDialogFragment fragment = new SaveDialogFragment();
+                            fragment.show(getFragmentManager(),"SaveDialogFragment");
+                        }else {
+                            Toast.makeText(getActivity(),"修改失败",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+
+                break;
+
         }
     }
 }

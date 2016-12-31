@@ -1,11 +1,13 @@
 package com.youqu.piclbs.start;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,8 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.umeng.analytics.MobclickAgent;
 import com.youqu.piclbs.MainActivity;
 import com.youqu.piclbs.R;
+import com.youqu.piclbs.pay.MarketListBiz;
 import com.youqu.piclbs.util.ImageFormatUtil;
 import com.youqu.piclbs.util.SharedPreferencesUtil;
 
@@ -44,12 +48,19 @@ public class SelectActivity extends AppCompatActivity {
     private final int REQUEST_IMAGE = 0x111;
     private ArrayList<View> viewContainer = new ArrayList<View>();
     int imgsrc[] = {R.mipmap.start_image1, R.mipmap.start_image2, R.mipmap.start_image3, R.mipmap.start_image4};
+    private Context mContext;
+    private final String mPageName = "AnalyticsHome";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
         ButterKnife.bind(this);
+        mContext = this;
+
+        MobclickAgent.setDebugMode(true);
+        MobclickAgent.openActivityDurationTrack(false);
+        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
 
         for (int i = 0; i < 4; i++) {
             ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.item_match_parent_imageview, null);
@@ -97,8 +108,29 @@ public class SelectActivity extends AppCompatActivity {
         guildCircleIndicator.setViewPager(viewPager);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        MarketListBiz marketListBiz = new MarketListBiz();
+        marketListBiz.setPullMaketListListener(new MarketListBiz.PullMarketListListener() {
+            @Override
+            public void PullFinish(String url) {
+                SharedPreferencesUtil.putString(SelectActivity.this,"download_url",url);
+            }
+        });
+        marketListBiz.MarketList();
+    }
+
     @OnClick(R.id.iv_guide_enter)
     public void onClick() {
+        String str = SharedPreferencesUtil.getString(SelectActivity.this,"download_url","");
+        if (str.equals("")){
+            Toast.makeText(this,"请打开网络",Toast.LENGTH_LONG).show();
+            return;
+        }else {
+            Log.e("------>",str.split("=")[str.split("=").length-1]);
+        }
+
         MultiImageSelector.create()
                 .showCamera(false)
                 .single()
@@ -124,5 +156,18 @@ public class SelectActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mPageName);
+        MobclickAgent.onResume(mContext);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mPageName);
+        MobclickAgent.onPause(mContext);
     }
 }

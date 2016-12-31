@@ -19,19 +19,30 @@ import java.util.List;
  */
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
-    public Activity activity;
-    public List<AddressBean.CategoryBean> items;
-    public onCategoryItemClickLinstener listener;
-    public List<Boolean> isClicks;
+    private Activity activity;
+    private List<AddressBean.CategoryBean> items;
+    private onCategoryItemClickLinstener listener;
+    private List<Boolean> isClicks;
 
     public interface onCategoryItemClickLinstener {
         void OnItemClick(int pos);
+    }
+
+    public List<AddressBean.CategoryBean> getItems(){
+        return items;
+    }
+    public void addAll(List<AddressBean.CategoryBean> data){
+        items = data;
+        notifyDataSetChanged();
     }
 
     public CategoryAdapter(Activity activity, List<AddressBean.CategoryBean> items) {
         this.activity = activity;
         this.items = items;
         isClicks = new ArrayList<>();
+        if (items == null){
+            return;
+        }
         for (int i=0;i<items.size();i++){
             if (i == 0){
                 isClicks.add(true);
