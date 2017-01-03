@@ -1,30 +1,8 @@
 {
   "topLocation": [
     {
-      "name": "马尔代夫",
-      "location": "Unnamed Road, Gaadhiffushi, 马尔代夫",
-      "lat": "73.1431056304931",
-      "lng": "2.2929536181714574",
-      "category": "现代都市"
-    },
-
-    {
-      "name": "巴黎圣母院",
-      "location": "Cathédrale Notre Dame, 75001 Paris, 法国",
-      "lat": "2.349676787853241",
-      "lng": "48.85291970657539",
-      "category": "现代都市"
-    },
-    {
-      "name": "伦敦市政厅",
-      "location": "City Hall, London SE1英国",
-      "lat": "-0.0785799999999881",
-      "lng": "51.50476",
-      "category": "现代都市"
-    },
-    {
       "name": "悉尼塔隆加公园",
-      "location": "Bradleys Head Rd, Mosman NSW 2088澳大利亚",
+      "location": "悉尼",
       "lat": "-33.8429",
       "lng": "151.24181999999996",
       "category": "现代都市"
@@ -45,7 +23,7 @@
     },
     {
       "name": "泰国宋卡市",
-      "location": "Thanon Ramvithi, Tambon Bo Yang, Amphoe Mueang Songkhla, Chang Wat Songkhla",
+      "location": "泰国宋卡市",
       "lat": "7.19103",
       "lng": "100.59546",
       "category": "现代都市"
@@ -59,7 +37,7 @@
     },
     {
       "name": "日本京都岚山",
-      "location": "Sagakamenoochō,日本",
+      "location": "日本",
       "lat": "35.01421",
       "lng": "135.67093999999997",
       "category": "名胜古迹"
@@ -213,28 +191,6 @@
       "category": "现代都市",
       "location": [
         {
-          "name": "马尔代夫",
-          "location": "Unnamed Road, Gaadhiffushi, 马尔代夫",
-          "lat": "73.1431056304931",
-          "lng": "2.2929536181714574",
-          "category": "现代都市"
-        },
-
-        {
-          "name": "巴黎圣母院",
-          "location": "Cathédrale Notre Dame, 75001 Paris, 法国",
-          "lat": "2.349676787853241",
-          "lng": "48.85291970657539",
-          "category": "现代都市"
-        },
-        {
-          "name": "伦敦市政厅",
-          "location": "City Hall, London SE1英国",
-          "lat": "-0.0785799999999881",
-          "lng": "51.50476",
-          "category": "现代都市"
-        },
-        {
           "name": "台北自来水园区",
           "location": "台湾台北市中正区恩源街",
           "lat": "25.01336",
@@ -292,7 +248,7 @@
         },
         {
           "name": "泰国宋卡市",
-          "location": "Thanon Ramvithi, Tambon Bo Yang, Amphoe Mueang Songkhla, Chang Wat Songkhla",
+          "location": "泰国宋卡市",
           "lat": "7.19103",
           "lng": "100.59546",
           "category": "现代都市"

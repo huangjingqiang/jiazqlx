@@ -16,10 +16,8 @@
             android:id="@+id/layout_iv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
-            android:background="@drawable/image"/>
-
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,6 +44,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/layout_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -54,6 +53,7 @@
                 android:textStyle="bold"/>
 
             <TextView
+                android:id="@+id/layout_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="三亚市海棠区海棠北路88号"

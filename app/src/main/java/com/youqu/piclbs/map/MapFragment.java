@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,6 +38,10 @@ import com.tencent.mapsdk.raster.model.Marker;
 import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
+import com.transitionseverywhere.ChangeBounds;
+import com.transitionseverywhere.ChangeImageTransform;
+import com.transitionseverywhere.TransitionManager;
+import com.transitionseverywhere.TransitionSet;
 import com.youqu.piclbs.R;
 import com.youqu.piclbs.pay.PayDialoFragment;
 import com.youqu.piclbs.tencent.fence.DemoGeofenceApp;
@@ -78,6 +83,8 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
     LinearLayout iv;
     @BindView(R.id.layout_iv)
     ImageView bg_iv;
+    @BindView(R.id.fl_map)
+    FrameLayout transitionsContainer;
 
     private LocationHelper mLocationHelper;
     private TencentMap mTencentMap;
@@ -109,6 +116,20 @@ public class MapFragment extends Fragment implements View.OnTouchListener {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                ViewGroup.LayoutParams params = iv.getLayoutParams();
+                params.height = DensityUtil.dp2px(getActivity(), 90);
+
+                TransitionManager.beginDelayedTransition(transitionsContainer, new TransitionSet()
+                        .addTransition(new ChangeBounds())
+                        .addTransition(new ChangeImageTransform()));
+                iv.setLayoutParams(params);
+            }
+        });
     }
 
     @Override

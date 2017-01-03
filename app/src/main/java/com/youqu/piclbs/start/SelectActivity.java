@@ -1,5 +1,6 @@
 package com.youqu.piclbs.start;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import butterknife.OnClick;
 import me.nereo.multi_image_selector.MultiImageSelector;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 import me.relex.circleindicator.CircleIndicator;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by hujiang on 2016/12/26.
@@ -46,7 +48,7 @@ public class SelectActivity extends AppCompatActivity {
     @BindView(R.id.guild_circleIndicator)
     CircleIndicator guildCircleIndicator;
     private final int REQUEST_IMAGE = 0x111;
-    private ArrayList<View> viewContainer = new ArrayList<View>();
+    private ArrayList<View> viewContainer = new ArrayList<>();
     int imgsrc[] = {R.mipmap.start_image1, R.mipmap.start_image2, R.mipmap.start_image3, R.mipmap.start_image4};
     private Context mContext;
     private final String mPageName = "AnalyticsHome";
@@ -130,11 +132,15 @@ public class SelectActivity extends AppCompatActivity {
         }else {
             Log.e("------>",str.split("=")[str.split("=").length-1]);
         }
-
-        MultiImageSelector.create()
-                .showCamera(false)
-                .single()
-                .start(SelectActivity.this, REQUEST_IMAGE);
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            MultiImageSelector.create()
+                    .showCamera(false)
+                    .single()
+                    .start(SelectActivity.this, REQUEST_IMAGE);
+        }else {
+            EasyPermissions.requestPermissions(this, "无权限",
+                    122, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -162,6 +168,11 @@ public class SelectActivity extends AppCompatActivity {
         super.onResume();
         MobclickAgent.onPageStart(mPageName);
         MobclickAgent.onResume(mContext);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

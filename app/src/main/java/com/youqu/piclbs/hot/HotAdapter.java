@@ -70,6 +70,7 @@ public class HotAdapter extends RecyclerView.Adapter<HotAdapter.MyViewHolder>{
         });
     }
 
+
     @Override
     public int getItemCount() {
         return items.size();

@@ -38,7 +38,7 @@ public class SaveDialogFragment extends DialogFragment {
     ImageView ivSaveClose;
     @BindView(R.id.btn_save_bt)
     Button btnSaveBt;
-    private final int REQUEST_IMAGE = 0x111;
+    private final int REQUEST_IMAGE = 0x112;
 
     @Nullable
     @Override
@@ -64,15 +64,15 @@ public class SaveDialogFragment extends DialogFragment {
     }
 
     private void save() {
-        dismiss();
         MultiImageSelector.create()
                 .showCamera(false)
                 .single()
-                .start(getActivity(), REQUEST_IMAGE);
+                .start(this, REQUEST_IMAGE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE) {
                 List<String> path = data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT);
@@ -86,6 +86,7 @@ public class SaveDialogFragment extends DialogFragment {
                         Intent intent = new Intent(getActivity(),MainActivity.class);
                         SharedPreferencesUtil.putString(getActivity(),"url",url);
                         startActivity(intent);
+                        dismiss();
                     }
 
                 }

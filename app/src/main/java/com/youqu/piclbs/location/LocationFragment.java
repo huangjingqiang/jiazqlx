@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +16,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.transitionseverywhere.ChangeBounds;
+import com.transitionseverywhere.ChangeImageTransform;
+import com.transitionseverywhere.TransitionManager;
+import com.transitionseverywhere.TransitionSet;
 import com.youqu.piclbs.R;
 import com.youqu.piclbs.bean.AddressBean;
 import com.youqu.piclbs.pay.PayDialoFragment;
@@ -47,6 +52,8 @@ public class LocationFragment extends Fragment {
     TextView save;
     @BindView(R.id.layout_iv)
     ImageView bg_iv;
+    @BindView(R.id.location)
+    FrameLayout transitionsContainer;
 
     private String lo;
     private String la;
@@ -85,14 +92,22 @@ public class LocationFragment extends Fragment {
             @Override
             public void ItemClick(int pos, boolean isex) {
                 locationAdapter.notifyDataSetChanged();
-                if ((iv.getHeight() > DensityUtil.dp2px(getActivity(), 90)) && !isex) {
+                if ((iv.getHeight() > DensityUtil.dp2px(getActivity(), 90))) {
                     ViewGroup.LayoutParams params = iv.getLayoutParams();
                     params.height = DensityUtil.dp2px(getActivity(), 90);
                     iv.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams params2 = bg_iv.getLayoutParams();
+                    params2.height = DensityUtil.dp2px(getActivity(), 56);
+                    bg_iv.setLayoutParams(params2);
                 } else {
                     ViewGroup.LayoutParams params = iv.getLayoutParams();
                     params.height = DensityUtil.dp2px(getActivity(), 260);
                     iv.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams params2 = bg_iv.getLayoutParams();
+                    params2.height = DensityUtil.dp2px(getActivity(), 225);
+                    bg_iv.setLayoutParams(params2);
                 }
                 if (location == null) {
                     lo = items.category.get(0).location.get(pos).lng;
@@ -137,6 +152,20 @@ public class LocationFragment extends Fragment {
             }
         });
 
+        content_RecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                ViewGroup.LayoutParams params = iv.getLayoutParams();
+                params.height = DensityUtil.dp2px(getActivity(), 90);
+
+                TransitionManager.beginDelayedTransition(transitionsContainer, new TransitionSet()
+                        .addTransition(new ChangeBounds())
+                        .addTransition(new ChangeImageTransform()));
+                iv.setLayoutParams(params);
+            }
+        });
+
     }
 
     @OnClick({R.id.image_save, R.id.location_image})
@@ -147,10 +176,18 @@ public class LocationFragment extends Fragment {
                     ViewGroup.LayoutParams params = iv.getLayoutParams();
                     params.height = DensityUtil.dp2px(getActivity(), 90);
                     iv.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams params2 = bg_iv.getLayoutParams();
+                    params2.height = DensityUtil.dp2px(getActivity(), 56);
+                    bg_iv.setLayoutParams(params2);
                 } else {
                     ViewGroup.LayoutParams params = iv.getLayoutParams();
                     params.height = DensityUtil.dp2px(getActivity(), 260);
                     iv.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams params2 = bg_iv.getLayoutParams();
+                    params2.height = DensityUtil.dp2px(getActivity(), 225);
+                    bg_iv.setLayoutParams(params2);
                 }
                 break;
             case R.id.image_save:

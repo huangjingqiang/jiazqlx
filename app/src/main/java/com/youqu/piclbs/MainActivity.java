@@ -21,18 +21,18 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_viewpager)
     ViewPager viewPager;
-    private final int REQUEST_IMAGE = 0x111;
     @BindView(R.id.slidingTabLayout)
     SlidingTabLayout slidingTabLayout;
     @BindView(R.id.main_search)
     RelativeLayout search;
     @BindView(R.id.main_about)
     ImageView about;
+    @BindView(R.id.main_back)
+    ImageView back;
     private List<String> titles = new ArrayList<>();
     private List<Fragment> fragments = new ArrayList<>();
     private MainFragmentAdapter adapter;
@@ -62,17 +62,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_IMAGE) {
-                List<String> path = data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT);
-                if (path != null && path.size() > 0) {
-
-                }
-            }
-        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @OnClick({R.id.main_search,R.id.main_about})
+    @OnClick({R.id.main_search,R.id.main_about,R.id.main_back})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.main_about:
@@ -82,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.main_search:
                 Intent intent = new Intent(MainActivity.this, SearchResultActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.main_back:
+                finish();
                 break;
         }
     }
